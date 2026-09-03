@@ -9,13 +9,16 @@
   z-index: 0;
   width: fit-content;
   height: 100%;
-  filter: invert(100%) blur(1px);
+  filter: blur(1px);
+  /* filter: invert(100%) blur(1px); */
 }
 .text-icon-load {
   display: flex;
   align-items: center;
   z-index: 0;
-  color: white;
+  /* color: white; */
+  color: black;
+  text-shadow: rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) 0.540302px 0.841471px 0px, rgb(255, 255, 255) -0.416147px 0.909297px 0px, rgb(255, 255, 255) -0.989992px 0.14112px 0px, rgb(255, 255, 255) -0.653644px -0.756802px 0px, rgb(255, 255, 255) 0.283662px -0.958924px 0px, rgb(255, 255, 255) 0.96017px -0.279415px 0px;
   filter: blur(1px);
   font-family: sans-serif;
   font-weight: bold;
