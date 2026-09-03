@@ -6,8 +6,12 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [text, setText] = useState("");
-  const [user, setUser] = useState("");
+  const [token , setToken] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [message , setMessage] = useState("");
+
   const audioent = new Audio(audioenter)
   audioent.volume = 0.75;
 
@@ -51,24 +55,44 @@ export default function Login() {
   const Click = async () => {
     window.location.reload();
   };
-  const handleClick = async () => {
-    console.log(password, user);
-    audioent.play();
-    navigate("/main");
-  };
 
-  // Inside Login component:
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // After successful login
-    navigate("/main");
+  const handleLogin = async () => {
+    audioent.play();
+    if(!username && !password){
+      setMessage("Invalid"); 
+      return;
+    } 
+    try {
+      const res = await axios.post("http://localhost:8080/api/pages/login", {
+        username,
+        password,
+      });
+      if(res.data.success){
+        localStorage.setItem("token", res.data.token);
+        setToken(res.data.token);
+        setSuccess(true);
+      }
+    } catch (error) {
+      console.log(error);
+      setMessage("Invalid");
+    }
+    setPassword("");
+    setUsername("");
   };
+  function proceed(){
+    const tokenX = localStorage.getItem("token")
+    if(tokenX == token){
+      navigate("/main");
+    }
+    
+  }
 
   return (
     <div class="window">
       <div class="window-header">
-        <p>OMVB Login</p>
+        <p>Terminal Login</p>
         <button onClick={() => Click()}>X</button>
       </div>
       <div class="window-content">
@@ -76,19 +100,39 @@ export default function Login() {
         <input
           type="password"
           onKeyDown={handleKeyDown}
-          onChange={(e) => setUser(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           class="input-main"
         />
         <input
           type="password"
           onKeyDown={handleKeyDown}
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           class="input-main"
         />
-        <button onClick={(e) => handleClick()} class="button-main">
+        <button onClick={(e) => handleLogin()} class="button-main">
           Login
         </button>
+        <div class="error">{message}</div>
       </div>
+      {success &&(
+        <div class="P-overlay">
+          <div class="window-P">
+            <div class="window-header">
+              <p>Terminal</p>
+            </div>
+            <div class="P-content">
+              <p>Login Success</p>
+              <div class="P-buttons">
+                <button onClick={proceed} class="button-main">
+                  Proceed
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

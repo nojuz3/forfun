@@ -9,7 +9,7 @@ db.prepare(
     username TEXT UNIQUE,
     email TEXT UNIQUE,
     password TEXT,
-    role TEXT DEFAULT 'user' CHECK(role IN ('admin', 'user'))
+    role TEXT DEFAULT 'user' CHECK(role IN ('admin', 'user','super'))
   )
 `
 ).run();
@@ -28,8 +28,21 @@ db.prepare(
   }
 })();
 
-// db.prepare("INSERT INTO pages (title, slug) VALUES(?,?)").run("test","test")
+(async () => {
+  const userExists = db
+    .prepare("SELECT * FROM users WHERE username = ?")
+    .get("test");
+
+  if (!userExists) {
+    const testpass = await bcrypt.hash("test123", 10);
+    db.prepare(
+      "INSERT INTO users (username,email ,password) VALUES (?, ?, ?)"
+    ).run("test", "test@mail.com", testpass);
+  }
+})();
+
+// db.prepare("INSERT INTO users (username,email,password) VALUES(?,?,?)").run("test","test@test.com","test123")
 // db.prepare(`DROP TABLE IF EXISTS festivals`).run();
-// db.prepare("DELETE FROM pages WHERE id = 2").run()
+// db.prepare("DELETE FROM users WHERE id = 2").run()
 
 module.exports = db;
